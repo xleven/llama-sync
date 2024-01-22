@@ -77,6 +77,7 @@ def sync(
             continue
         
         model_name = tag_name.replace(":", "-")
+        model_title = model_name.title().replace("-", " ")
         model_info = call_ollama_api("/api/show", {"name": tag_name})
         model_path = parse_ollama_model_path(model_info.get("modelfile"))
         model_parameters = parse_ollama_parameters(model_info.get("parameters"))
@@ -87,10 +88,10 @@ def sync(
             "version": 1,
             "format": "gguf",
             "source_url": "N/A",
-            "id": tag_name,
-            "name": model_name.title().replace("-", " "),
+            "id": model_name,
+            "name": model_title,
             "created": int(datetime.fromisoformat(model.get("modified_at")).timestamp() * 1000),
-            "description": f"{model_name} - linked from Ollama",
+            "description": f"{model_title} - linked from Ollama",
             "settings": {
                 "prompt_template": template,
             },
