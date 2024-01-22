@@ -67,8 +67,6 @@ if __name__ == "__main__":
         model_info = call_ollama_api("/api/show", {"name": tag_name})
         model_path = parse_ollama_model_path(model_info.get("modelfile"))
         model_parameters = parse_ollama_parameters(model_info.get("parameters"))
-        parameter = DEFAULT_JAN_MODEL_PARAMETER
-        parameter.update(model_parameters)
         template = model_info.get("template")
 
         model_json = {
@@ -83,7 +81,7 @@ if __name__ == "__main__":
             "settings": {
                 "prompt_template": template,
             },
-            "parameters": parameter,
+            "parameters": {**DEFAULT_JAN_MODEL_PARAMETER, **model_parameters},
             "metadata": {
                 "author": "User",
                 "tags": [],
