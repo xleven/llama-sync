@@ -1,3 +1,4 @@
+import argparse
 import json
 import os
 import re
@@ -58,12 +59,16 @@ def parse_ollama_parameters(parameters: str):
     return params
 
 
-if __name__ == "__main__":
-
+def sync(
+    model_filter: str = "",
+):
     for model in call_ollama_api("/api/tags").get("models"):
         tag_name = model.get("name")
+        
+        if model_filter and not re.search(model_filter, tag_name):
+            continue
+        
         model_name = tag_name.replace(":", "-")
-
         model_info = call_ollama_api("/api/show", {"name": tag_name})
         model_path = parse_ollama_model_path(model_info.get("modelfile"))
         model_parameters = parse_ollama_parameters(model_info.get("parameters"))
@@ -98,3 +103,16 @@ if __name__ == "__main__":
                 json.dump(model_json, fp, indent=2)
         except Exception as err:
             print(err)
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Sync Ollama models to Jan.")
+    parser.add_argument(
+        "-m",
+        "--model",
+        type=str,
+        default="",
+        help="The model(s) to sync. Use regexp to sync matched ones and empty to sync all.",
+    )
+    args = parser.parse_args()
+    sync(args.model)
