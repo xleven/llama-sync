@@ -59,6 +59,14 @@ def parse_ollama_parameters(parameters: str):
     return params
 
 
+def transfrom_template(template: str):
+    # TODO: transform more complex template
+    return (
+        template.replace("{{ .System }}", "{system_prompt}")
+                .replace("{{ .Prompt }}", "{prompt}")
+    )
+
+
 def sync(
     model_filter: str = "",
 ):
@@ -72,7 +80,7 @@ def sync(
         model_info = call_ollama_api("/api/show", {"name": tag_name})
         model_path = parse_ollama_model_path(model_info.get("modelfile"))
         model_parameters = parse_ollama_parameters(model_info.get("parameters"))
-        template = model_info.get("template")
+        template = transfrom_template(model_info.get("template"))
 
         model_json = {
             "object": "model",
